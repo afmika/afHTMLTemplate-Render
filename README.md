@@ -52,9 +52,9 @@ const app = express();
 const engine = new afTemplate();
 
 app.get('/', (req, res) => {
-    res.writeHead(200, { 
-        'Content-Type': 'text/html' 
-    });
+	res.writeHead(200, { 
+		'Content-Type': 'text/html' 
+	});
 	const partials = [
 		{
 			path: "./path/to/head.html",
@@ -74,16 +74,16 @@ app.get('/', (req, res) => {
 		}
 	];
 	
-    engine.renderPages(res, partials)
+	engine.renderPages(res, partials)
 	.then(pages => {
 		for(let p in pages)
 			console.log(pages[p].path, " RENDERED");
-        res.end("");
-    })
+		res.end("");
+	})
 	.catch(err => {
-        console.log( err );
-        res.end( err.toString() );
-    });
+		console.log( err );
+		res.end( err.toString() );
+	});
 });
 ```
 
@@ -103,15 +103,21 @@ foot.html
 ```
 
 
-You can also include files directly from your html template
+You can also include files directly from your html template <br/>
 example.html
 ```
-	<% include_once("./path/to/menu.html"); %>
-	<% include("./path/to/index.html"); %>
-	<% include("./path/to/foot.html"); %>
+	<div>
+		<% include_once("./path/to/menu.html"); %>
+	</div>
+	<div>
+		<% include("./path/to/index.html"); %>	
+	</div>
+	<div>
+		<% include("./path/to/foot.html"); %>
+	</div>
 ```
 
-# TODO-LIST Project
+# Example 3 : TODO-LIST project
 
 server.js
 ```javascript
@@ -142,7 +148,7 @@ app.get('/', (req, res) => {
     });
 	
     engine.render(res, "./views/index.html", {
-        app_title : "Todo list project",
+        app_title : "TODO-LIST",
 		todos : todos_array,
     })
 	.then(page => {
