@@ -1,6 +1,6 @@
 {
   "name": "aftemplate",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A simple tool to dynamically display HTML template pages using Javascript/nodejs",
   "main": "server.js",
   "dependencies": {
