@@ -1,7 +1,7 @@
 {
-  "name": "templating",
-  "version": "1.0.0",
-  "description": "A simple alternative for page templating",
+  "name": "afTemplate",
+  "version": "1.0.1",
+  "description": "A simple tool to dynamically display HTML template pages using Javascript/nodejs",
   "main": "server.js",
   "dependencies": {
     "express": "^4.17.1"
