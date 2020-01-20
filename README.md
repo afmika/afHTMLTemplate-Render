@@ -166,7 +166,7 @@ app.get('/add', (req, res) => {
 	res.redirect('/');
 });
 ```
-index.html
+./views/index.html
 ```
 <!DOCTYPE html>
  <html>
@@ -174,12 +174,11 @@ index.html
         <title>TODO LIST</title>
     </head>
     <body>        
+		<img src="assets/images/icon.png" width="32" height="32"/>
         <h3>
            {{ app_title }}
         </h3>
-		
-		<img src="assets/logo.png"/>
-		
+	
 		<form method="get" action="add">
 			<input type="text" name="todo" value="" size="25">
 			<button>add</button>

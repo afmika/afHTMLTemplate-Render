@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+ <html>
+    <head>
+        <title>TODO LIST</title>
+    </head>
+    <body>        
+		<img src="assets/images/icon.png" width="32" height="32"/>
+        <h3>
+           {{ app_title }}
+        </h3>
+		
+	
+		<form method="get" action="add">
+			<input type="text" name="todo" value="" size="25">
+			<button>add</button>
+		</form>
+		
+        <div>
+			<% if( todos.length == 0) { %>
+				<h3> No todos yet...</h3>
+			<% } %>
+			
+			<% todos.forEach(todo => {   %>
+				<ol type="a"> <%= todo %> </ol>
+			<% }); %>
+        </div>
+
+    </body>
+</html>
