@@ -151,7 +151,7 @@ app.get('/', (req, res) => {
 	
     engine.render(res, "./views/index.html", {
         app_title : "TODO-LIST",
-		todos : todos_array,
+		todos : todos_array
     })
 	.then(page => {
         console.log(page.path, "RENDERED");
