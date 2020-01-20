@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const port = 4200;
 
-const afTemplate = require("../../aftemplate.js");
+const afTemplate = require("../../index");
 const engine = new afTemplate();
 
 let todos_array = [];

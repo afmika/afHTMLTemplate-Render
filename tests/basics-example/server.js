@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const port = 4200;
 
-const afTemplate = require("../../aftemplate");
+const afTemplate = require("../../index");
 const engine = new afTemplate();
 
 app.listen(process.env.PORT || port, () => console.log(`SERVER IS RUNNING AT ${port}`));
