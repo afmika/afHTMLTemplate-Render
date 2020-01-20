@@ -12,22 +12,22 @@ const app = express();
 const engine = new afTemplate();
 
 app.get('/', (req, res) => {
-    res.writeHead(200, { 
-        'Content-Type': 'text/html' 
-    });
+	res.writeHead(200, { 
+		'Content-Type': 'text/html' 
+	});
 	
-    engine.render(res, "./path/to/mypage.html", {
-        app_title : "Example",
+	engine.render(res, "./path/to/mypage.html", {
+		app_title : "Example 1",
 		names : ['Marc', 'John', 'Diana']
-    })
+	})
 	.then(page => {
-        console.log(page.path, "RENDERED");
-        res.end('');
-    })
+		console.log(page.path, "RENDERED");
+		res.end('');
+	})
 	.catch(err => {
-        console.log( err );
-        res.end( err.toString() );
-    });
+		console.log( err );
+		res.end( err.toString() );
+	});
 });
 ```
 mypage.html
