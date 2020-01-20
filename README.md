@@ -1,13 +1,14 @@
 # af-HTML-Template-Render
 A simple tool to dynamically display HTML template pages using Javascript/nodejs
 
-# Example 1 : render a single page
+# Example 1 : Single page rendering
 ```javascript
 
 'use strict';
 const express = require('express');
-const app = express();
 const afTemplate = require("aftemplate");
+
+const app = express();
 const engine = new afTemplate();
 
 app.get('/', (req, res) => {
@@ -40,13 +41,14 @@ mypage.html
 </div>
 ```
 
-# Example 2 : render more than one page
+# Example 2 : Multiple page rendering
 
 ```javascript
 'use strict';
 const express = require('express');
-const app = express();
 const afTemplate = require("aftemplate");
+
+const app = express();
 const engine = new afTemplate();
 
 app.get('/', (req, res) => {
@@ -93,19 +95,100 @@ head.html
 body.html
 ```
 	<h2> {{ message1 }} . {{ message2 }}</h2>
-	<h2> Date : {{ time_info }}</h2>
+	<h2> Date : {{ time_info }} </h2>
 ```
 foot.html
 ```
 	<h2> {{ message }}</h2>
 ```
 
-```
+
 You can also include files directly from your html template
-```
 example.html
 ```
 	<% include_once("./path/to/menu.html"); %>
 	<% include("./path/to/index.html"); %>
 	<% include("./path/to/foot.html"); %>
+```
+
+# TODO-LIST Project
+
+server.js
+```javascript
+'use strict';
+
+const express = require('express');
+const afTemplate = require("aftemplate");
+
+const app = express();
+const engine = new afTemplate();
+const port = 4200;
+
+let todos_array = [];
+
+app.listen(process.env.PORT || port, () => console.log(`SERVER IS RUNNING AT ${port}`));
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    next();
+});
+
+app.use('/assets', express.static('assets'));
+
+app.get('/', (req, res) => {
+    res.writeHead(200, { 
+        'Content-Type': 'text/html' 
+    });
+	
+    engine.render(res, "./views/index.html", {
+        app_title : "Todo list project",
+		todos : todos_array,
+    })
+	.then(page => {
+        console.log(page.path, "RENDERED");
+        res.end('');
+    })
+	.catch(err => {
+        console.log( err );
+        res.end( err.toString() );
+    });
+});
+
+app.get('/add', (req, res) => {
+	todos_array.push( req.query.todo );
+	res.redirect('/');
+});
+```
+index.html
+```
+<!DOCTYPE html>
+ <html>
+    <head>
+        <title>TODO LIST</title>
+    </head>
+    <body>        
+        <h3>
+           {{ app_title }}
+        </h3>
+		
+		<img src="assets/logo.png"/>
+		
+		<form method="get" action="add">
+			<input type="text" name="todo" value="" size="25">
+			<button>add</button>
+		</form>
+		
+        <div>
+			<% if( todos.length == 0) { %>
+				<h3> No todos yet...</h3>
+			<% } %>
+			
+			<% todos.forEach(todo => {   %>
+				<ol type="a"> <%= todo %> </ol>
+			<% }); %>
+        </div>
+
+    </body>
+</html>
 ```
