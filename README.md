@@ -118,9 +118,11 @@ example.html
 ```
 
 # Example 3 : TODO-LIST project
-```
-( You can download it here https://github.com/afmika/afHTMLTemplate-Render/tree/master/examples/todo-list-project )
-```
+
+<div>
+	( You can download it <a href="https://github.com/afmika/afHTMLTemplate-Render/tree/master/examples/todo-list-project">here</a>  )
+</div>
+
 server.js
 ```javascript
 'use strict';
