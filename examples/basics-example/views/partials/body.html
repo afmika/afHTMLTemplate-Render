@@ -1,0 +1,20 @@
+<h1> BODY : {{ message1 }} and {{ message2 }}</h1>
+
+<div>
+	
+	<!-- test include, doesn't check if the content is already included-->
+	<% include("./views/includes/test_include.html"); %>
+	<% include("./views/includes/test_include.html"); %>
+
+	<!-- test include_once, checks if the content has been already included before -->
+	<% include_once("./views/includes/test_include_once.html"); %>
+	<% include_once("./views/includes/test_include_once.html"); %>
+</div>
+
+<div>
+    <% 
+        let arr = new Array(10).fill(1).map((a, i) => i * 2);
+        response.write( "Some auto-generated stuff "+arr.join(", ") );
+    %>
+    <a href="/">HOME</a>
+</div>

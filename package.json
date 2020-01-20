@@ -1,0 +1,15 @@
+{
+  "name": "templating",
+  "version": "1.0.0",
+  "description": "A simple alternative for page templating",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test/examples/basic-example/server.js"
+  },
+  "author": "afmika",
+  "license": "ISC"
+}

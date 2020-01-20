@@ -1,0 +1,61 @@
+ <% response.write( "SOME STUFF"); %>
+ <html>
+    <head>
+        <title>Exemple</title>
+    </head>
+    <body>
+        <p>Test page</p>
+        
+        <div>
+			Access to page arguments
+			<table border="1">
+				
+				<tr>
+					<th>Output</th>
+					<th>Syntax/variable used</th>
+				</tr>
+				
+				<tr>
+					<td> <b> {{ message }} </b> </td>
+					<td> {{&nbspmessage&nbsp}} </td>
+				</tr>
+				
+				<tr>
+					<td> <b> <%= $.message %> </b> </td>
+					<td> $.message </td>
+				</tr>
+				
+				<tr>
+					<td> <b> <%= message %> </b> </td>
+					<td> message </b> </td>
+				</tr>
+				
+			</table>
+			
+        </div>
+		
+        <h3>
+                It's {{ hours }} : {{ minutes }} : {{ seconds }}
+        </h3>
+		
+        <a href="multiple"> CLICK HERE FOR MULTIPLE RENDERING TEST </a>
+	
+        <div>
+            <table border="1">
+                    <%
+                        const student = ["mika", "jean", "rakoto"];
+                        for(let i = 0; i < student.length; i++) {
+                            const numero = i + 1;
+                    %>
+                <tr>
+                        <td>Student</td>
+                        <td><%= numero %></td> 
+                        <td><%= student[i] %></td>
+                        <td><img src="assets/images/pic.png" width="32"></td>
+                </tr>
+                    <% } %>
+            </table>    
+        </div>
+
+    </body>
+</html>
