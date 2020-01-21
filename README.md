@@ -1,5 +1,5 @@
-# af-HTML-Template-Render
-A simple tool to dynamically display HTML template pages using Javascript/nodejs
+﻿# af-HTML-Template-Render
+A simple tool to dynamically display HTML template pages using nodejs, Javascript and express.js
 
 # Example 1 : Single page rendering
 ```javascript
@@ -89,12 +89,17 @@ app.get('/', (req, res) => {
 
 head.html
 ```
-	<h1> {{ message }}</h1>
+	<h1> {{ message }} </h1>
 ```
 
 body.html
 ```
-	<h2> {{ message1 }} . {{ message2 }}</h2>
+	<h2> 
+                <i>
+                  {{ message1 }}
+                </i> 
+           {{ message2 }}
+        </h2>
 	<h2> Date : {{ time_info }} </h2>
 ```
 foot.html
@@ -120,7 +125,7 @@ example.html
 # Example 3 : TODO-LIST project
 
 <div>
-	( You can download it <a href="https://github.com/afmika/afHTMLTemplate-Render/tree/master/examples/todo-list-project">here</a>  )
+	( You can download it <a href="https://github.com/afmika/afHTMLTemplate-Render/tree/master/examples/todo-list-project"><b>here</b></a>  )
 </div>
 
 server.js
@@ -140,7 +145,7 @@ app.listen(process.env.PORT || port, () => console.log(`SERVER IS RUNNING AT ${p
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     next();
 });
 
@@ -153,13 +158,13 @@ app.get('/', (req, res) => {
 	
     engine.render(res, "./views/index.html", {
         app_title : "TODO-LIST",
-		todos : todos_array
+        todos : todos_array
     })
-	.then(page => {
+    .then(page => {
         console.log(page.path, "RENDERED");
         res.end('');
     })
-	.catch(err => {
+    .catch(err => {
         console.log( err );
         res.end( err.toString() );
     });
