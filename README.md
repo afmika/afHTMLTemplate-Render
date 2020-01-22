@@ -1,4 +1,4 @@
-﻿# af-HTML-Template-Render
+﻿# aftemplate.js
 A simple tool to dynamically display HTML template pages using nodejs, Javascript and express.js
 
 # Example 1 : Single page rendering
@@ -115,7 +115,7 @@ example.html
 		<% include_once("./path/to/menu.html"); %>
 	</div>
 	<div>
-		<% include("./path/to/index.html"); %>	
+		<% include("./path/to/content.html"); %>	
 	</div>
 	<div>
 		<% include("./path/to/foot.html"); %>
@@ -125,10 +125,10 @@ example.html
 # Example 3 : TODO-LIST project
 
 <div>
-	( You can download it <a href="https://github.com/afmika/afHTMLTemplate-Render/tree/master/examples/todo-list-project"><b>here</b></a>  )
+	( Source code <a href="https://github.com/afmika/afHTMLTemplate-Render/tree/master/examples/todo-list-project"><b>HERE</b></a>  )
 </div>
 
-server.js
+./server.js
 ```javascript
 'use strict';
 

@@ -56,7 +56,11 @@ module.exports = class afTemplate {
                 content = content.replace(exp, value);
             }
         }
-        
+		
+		// we need to deal with some weird stuff like putting "`" inside the content (eg: <b>L`arbre</b>)
+		// if we don't escape it, a parsing error will be triggered
+		content = content.replace(/`/gi, "\\`");
+		
         // replaces all expressions 
         let code_part = []; // contains the position of each couple {%, %}
         let text_part = []; // contains the position of each text
@@ -105,6 +109,7 @@ module.exports = class afTemplate {
 
         let content_to_eval = "";
         let index_used = {};
+
         for (let i = 0; i < text_part.length; i++) {
 			const text_start = text_part[i][0],
 					text_end = text_part[i][1];
@@ -129,11 +134,9 @@ module.exports = class afTemplate {
                     return;
                 }
             });
-
-            // we need to deal with some weird stuff like putting "`" inside the content (eg: <b>L`arbre</b>)
-            // if we don't escape it, a parsing error will be triggered
-            const temp = content.substring(text_start, text_end+1).replace("`", "\\`");
-            content_to_eval += "response.write(\`" + temp + "\`);";  
+			
+			const temp = content.substring(text_start, text_end+1);
+            content_to_eval += "response.write(`" + temp + "`);";  
 
             code_part.forEach((code, index) => {
                 let printed = false;
