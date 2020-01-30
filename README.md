@@ -1,6 +1,7 @@
 ﻿# aftemplate.js
+```
 A simple tool to dynamically display HTML template pages using nodejs, Javascript and express.js
-
+```
 # Example 1 : Single page rendering
 ```javascript
 

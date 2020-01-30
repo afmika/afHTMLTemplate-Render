@@ -62,7 +62,7 @@ module.exports = class afTemplate {
 		content = content.replace(/`/gi, "\\`");
 		
         // replaces all expressions 
-        let code_part = []; // contains the position of each couple {%, %}
+        let code_part = []; // contains the position of each couple <%, %>
         let text_part = []; // contains the position of each text
 		let code_write_part = {};
         for(let i = 0, code = [], text = [0]; i < content.length; i++) {
@@ -73,7 +73,7 @@ module.exports = class afTemplate {
                             text_part.push(text);
                             text = [];
                         } else {
-                            // it means that the content starts with a code
+                            // occurs when the content starts with a code
                             text = [];
                         }
 
@@ -83,7 +83,7 @@ module.exports = class afTemplate {
 								code_write_part[ code_part.length ] = true;
 							}
                     } else if(content[i] == "%" && content[i+1] == ">") {
-                        text.push( i + 2 ); // +2 because we start after %} (since i represents %  's index) 
+                        text.push( i + 2 ); // +2 : we start after %> (since i represents %  's index) 
 
                         code.push(i + 2);
                         code_part.push( code );
@@ -96,13 +96,6 @@ module.exports = class afTemplate {
             }
         }
         
-        /*
-        eg: Something here {% some_code %} Something else
-        will do :
-            response.write("Something here");
-            some_code;
-            response.write("Something else");
-        */
         // console.log(code_part);
         // console.log(text_part);
         // console.log(code_write_part);
@@ -167,8 +160,8 @@ module.exports = class afTemplate {
 			const that = this;
 			const run_protected_context = function(response, argument) {
 				
-				// argument alias
-				// eg: $.some_variable == argument.some_variable // true
+				// arg alias
+				// eg: $.some_variable == argument.some_variable : true
 				let [$, page, props] = new Array(3).fill( argument );
 				
 				// includes
@@ -180,7 +173,7 @@ module.exports = class afTemplate {
 					that.includePartial(response, html_path, argument, is_included, true);
 				}
 				
-				// or use directly the variable
+				// direct uses of a variable
 				let arr = [], values = [];
 				for(let variable in argument) {
 					arr.push( variable );

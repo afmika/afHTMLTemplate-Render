@@ -11,7 +11,7 @@
     "test": "node test/examples/basic-example/server.js"
   },
   "author": "afmika",
-  "license": "ISC",
+  "license": "GPL",
   "directories": {
     "example": "examples"
   },
