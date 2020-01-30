@@ -1,8 +1,8 @@
 ﻿# aftemplate.js
-```
+
 A simple tool to dynamically display HTML template pages using nodejs, Javascript and express.js
-```
-# Example 1 : Single page rendering
+
+## Example 1 : Single page rendering
 ```javascript
 
 'use strict';
@@ -42,7 +42,7 @@ mypage.html
 </div>
 ```
 
-# Example 2 : Multiple page rendering
+## Example 2 : Multiple page rendering
 
 ```javascript
 'use strict';
@@ -123,7 +123,7 @@ example.html
 	</div>
 ```
 
-# Example 3 : TODO-LIST project
+## Example 3 : TODO-LIST project
 
 <div>
 	( Source code <a href="https://github.com/afmika/afHTMLTemplate-Render/tree/master/examples/todo-list-project"><b>HERE</b></a>  )
