@@ -92,7 +92,7 @@ module.exports = class afTemplate {
             }
             if(text.length == 1 && i + 1 >= content.length) {
                 text.push( content.length );
-                text_part.push(text);
+                text_part.push( text );
             }
         }
         
@@ -142,7 +142,6 @@ module.exports = class afTemplate {
 						if(code_write_part[ index ]) {
 							let ctn = content.substring(code_after[0] + 3, code_after[1] - 2);
 							const temp = ctn.replace("`", "\\`");
-							// console.log(temp);
 							content_to_eval += "response.write(''+(" + temp + "));";
 						} else {
 							content_to_eval += content.substring(code_after[0] + 2, code_after[1] - 2);
@@ -192,7 +191,9 @@ module.exports = class afTemplate {
                 path : html_path
             };
         }
-        response.write(content);
+		
+        response.write( content );
+		
         return {
             content: content,
             path : html_path

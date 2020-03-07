@@ -122,7 +122,6 @@ example.html
 		<% include("./path/to/foot.html"); %>
 	</div>
 ```
-
 ## Example 3 : TODO-LIST project
 
 <div>
