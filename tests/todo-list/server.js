@@ -38,6 +38,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/add', (req, res) => {
-	todos_array.push( req.query.todo );
+	todos_array.push({ 
+		id : todos_array.length + 1 , 
+		content : req.query.todo
+	});
 	res.redirect('/');
 });
