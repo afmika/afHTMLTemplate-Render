@@ -15,23 +15,22 @@ engine.setAlias({
 
 app.get('/', (req, res) => {
 	const partials = [
+        // traditionnal way + using alias
         {
             path: engine.path('head'),
             argument: { message : "Hello from head.html" }
         },
-        {
-            path: engine.path('body'),
-            argument: { 
-				message1 : "Hello from body.html", 
-				message2 : "It works!",
-				message3 : "Hello from test_include.html",
-				message4 : "Hello from test_include_once.html",
-			}
-        },
-        {
-            path: engine.path('foot'),
-            argument: { message : "Hello from foot.html" }
-        }
+
+        // new way + using alias
+        engine.setup('body', {
+            message1 : "Hello from body.html", 
+            message2 : "It works!",
+            message3 : "Hello from test_include.html",
+            message4 : "Hello from test_include_once.html"
+        }),
+        engine.setup('foot', {
+            message : "Hello from foot.html"
+        })
     ];
 	
     engine.renderPages(res, partials)

@@ -241,13 +241,28 @@ module.exports = class afTemplate {
     }
 
     /**
-     * @param {string} alias 
+     * Returns the path associated with 'alias_name'
+     * @param {string} alias_name 
      * @returns {string} path of the given alias
      */
-    path( alias ) {
-        if ( this.alias[ alias ] ) {
-            return this.alias[ alias ];
+    path( alias_name ) {
+        if ( this.alias[ alias_name ] ) {
+            return this.alias[ alias_name ];
         }
         return null;
+    }
+
+    /**
+     * Setup the template referenced by alias_name
+     * .Can be helpful with 'renderPages'
+     * @param {*} alias_name 
+     * @param {*} args Argument of the template referenced by 'alias_name'
+     */
+    setup( alias_name, args) {
+        let config = { path : this.path( alias_name ) };
+        if ( args )
+            config.argument = args;
+        console.log( config );
+        return config;
     }
 }
