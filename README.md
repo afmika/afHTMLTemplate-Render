@@ -2,6 +2,22 @@
 
 A simple tool to dynamically display HTML template pages using nodejs, Javascript and express.js
 
+
+  [![NPM Version][npm-image]][npm-url]
+  [![NPM Downloads][downloads-image]][downloads-url]
+  [![Linux Build][travis-image]][travis-url]
+  [![Windows Build][appveyor-image]][appveyor-url]
+  
+
+## Features
+	* Lightweight
+	* Uses 100% javascript as template programming language
+	* Easy to configure with your preferred view architecture
+	* Can render any type of template text file and not just html (json, xml, ...)
+	* Template alias system
+	* Write less, do more
+
+
 ## Example 1 : Single page rendering
 ```javascript
 
