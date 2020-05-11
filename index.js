@@ -24,7 +24,7 @@ module.exports = class afTemplate {
      * @param {*} response the server's response ( from express )
      * @param {string} html_path Path of the template file to load
      * @param {JSON} argument Args of the template
-     * @param {JSON} is_included Helps this template is already (or not) included 
+     * @param {JSON} is_included
      * @param {boolean} no_repeat enable / disable include_once
      */
 	async includePartial( response, html_path, argument, is_included, no_repeat) {
@@ -246,7 +246,7 @@ module.exports = class afTemplate {
     }
 
     /**
-     * Stores everything from alias_cfg to the current instance
+     * Stores everything from alias_cfg inside the current instance
      * @param {JSON} alias_cfg
      */
     setAlias(alias_cfg) {
@@ -268,7 +268,7 @@ module.exports = class afTemplate {
     }
 
     /**
-     * Setup the template referenced by alias_name.
+     * Setups the template referenced by alias_name.
      * Can be helpful with 'renderPages'
      * @param {string} alias_name 
      * @param {JSON} args argument of the template referenced by 'alias_name'
