@@ -1,6 +1,5 @@
 /**
  * @author afmika
- * @mail afmichael73@gmail.com
  */
  
 "use strict";
@@ -8,15 +7,24 @@
 const fs = require("fs");
 
 module.exports = class afTemplate {
+    /**
+     * @param {JSON[]} alias_cfg 
+     */
+	constructor( alias_cfg ) {
+        this.alias = {};
+        if ( alias_cfg ) {
+            this.setAlias( alias );
+        }
+    }
     
-	constructor(config) {
-		this.setConfig(config);
-	}
-	
-	setConfig(config) {
-		this.config = config || {};
-	}
-	
+    /**
+     * Includes a view inside another one
+     * @param {*} response the server's response ( from express )
+     * @param {string} html_path Path of the template file to load
+     * @param {JSON} argument Args of the template
+     * @param {JSON} is_included Helps this template is already (or not) included 
+     * @param {boolean} no_repeat enable / disable include_once
+     */
 	async includePartial( response, html_path, argument, is_included, no_repeat) {
 		try {
 			let can_not_include = no_repeat && is_included[ html_path ];
@@ -31,7 +39,11 @@ module.exports = class afTemplate {
 			throw e;
 		}
 	}
-	
+	/**
+     * Renders multiple template files
+     * @param {*} response the server's response ( from express )
+     * @param {JSON[]} array  [{ path : '...', argument : { .... }}, ... ]
+     */
     async renderPages(response, array) {
         try {
             for(let i = 0; i < array.length; i++) {
@@ -45,6 +57,12 @@ module.exports = class afTemplate {
         }
     }
 
+    /**
+     * Renders a single page
+     * @param {*} response the server's response ( from express )
+     * @param {string} html_path Path of the template file to load
+     * @param {JSON} argument Args of the template
+     */
     async render(response, html_path, argument) {
         let content = fs.readFileSync( html_path ).toString();
         if( argument ) {
@@ -198,5 +216,38 @@ module.exports = class afTemplate {
             content: content,
             path : html_path
         };
+    }
+
+    /**
+     * Stores 'alias' to the current instance
+     * @param {string} alias 
+     * @param {string} path 
+     */
+    addAlias(alias, path) {
+        if (typeof alias != 'string' || typeof path != 'string' ) {
+            throw new Error('Invalid path/alias, alias/path must be a string');
+        }
+        this.alias[ alias ] = path;
+    }
+
+    /**
+     * Stores all stuffs contained inside alias_cfg to the current instance
+     * @param {JSON} alias_cfg
+     */
+    setAlias(alias_cfg) {
+        for (let alias in alias_cfg) {
+            this.addAlias(alias, alias_cfg[ alias ] );
+        }
+    }
+
+    /**
+     * @param {string} alias 
+     * @returns {string} path of the given alias
+     */
+    path( alias ) {
+        if ( this.alias[ alias ] ) {
+            return this.alias[ alias ];
+        }
+        return null;
     }
 }
