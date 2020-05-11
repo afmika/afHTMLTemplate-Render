@@ -44,6 +44,10 @@ mypage.html
 
 ## Example 2 : Multiple page rendering
 ### Using the new alias system
+<div>
+(You can check out this example project which features the new alias system  <a href="https://github.com/afmika/afHTMLTemplate-Render/tree/master/examples/mini-website"><b>HERE</b></a> )
+</div>
+
 ```javascript
 'use strict';
 const express = require('express');
