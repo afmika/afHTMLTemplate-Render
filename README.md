@@ -43,7 +43,50 @@ mypage.html
 ```
 
 ## Example 2 : Multiple page rendering
+### Using the new alias system
+```javascript
+'use strict';
+const express = require('express');
+const afTemplate = require("aftemplate");
 
+const app = express();
+const engine = new afTemplate();
+engine.setAlias({
+    'header' : './path/to/head.html',
+    'body' : './path/to/body.html',
+    'footer' './path/to/foot.html'
+});
+
+app.get('/', (req, res) => {
+	res.writeHead(200, { 
+		'Content-Type': 'text/html' 
+	});
+	const partials = [
+		engine.setup('header', { message : "Hello from head.html" }),
+        
+		engine.setup('body', { 
+			message1 : "Hello from body.html", 
+			message2 : "It works!",
+			time_info : new Date().toJSON()
+		}),
+		
+		engine.setup('footer', { message : "Hello from foot.html" })
+	];
+	
+	engine.renderPages(res, partials)
+	.then(pages => {
+		for(let p in pages)
+			console.log(pages[p].path, " RENDERED");
+		res.end("");
+	})
+	.catch(err => {
+		console.log( err );
+		res.end( err.toString() );
+	});
+});
+```
+Or ...
+### Using template files directly
 ```javascript
 'use strict';
 const express = require('express');
@@ -87,7 +130,7 @@ app.get('/', (req, res) => {
 	});
 });
 ```
-
+### Templates used
 head.html
 ```
 	<h1> {{ message }} </h1>
@@ -133,11 +176,11 @@ example.html
 'use strict';
 
 const express = require('express');
-const afTemplate = require("aftemplate");
-
 const app = express();
-const engine = new afTemplate();
 const port = 4200;
+
+const afTemplate = require("aftemplate");
+const engine = new afTemplate();
 
 let todos_array = [];
 
@@ -145,45 +188,50 @@ app.listen(process.env.PORT || port, () => console.log(`SERVER IS RUNNING AT ${p
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     next();
 });
 
-app.use('/assets', express.static('assets'));
+
+engine.setAlias({
+	'home' : './views/index.html'
+});
 
 app.get('/', (req, res) => {
     res.writeHead(200, { 
         'Content-Type': 'text/html' 
     });
 	
-    engine.render(res, "./views/index.html", {
-        app_title : "TODO-LIST",
-        todos : todos_array
+    engine.render(res, engine.path('home'), {
+        app_title : "Test todo list",
+		todos : todos_array,
     })
-    .then(page => {
+	.then(page => {
         console.log(page.path, "RENDERED");
         res.end('');
     })
-    .catch(err => {
+	.catch(err => {
         console.log( err );
         res.end( err.toString() );
     });
 });
 
 app.get('/add', (req, res) => {
-	todos_array.push( req.query.todo );
+	todos_array.push({ 
+		id : todos_array.length + 1 , 
+		content : req.query.todo
+	});
 	res.redirect('/');
 });
 ```
 ./views/index.html
 ```
-<!DOCTYPE html>
+ <!DOCTYPE html>
  <html>
     <head>
         <title>TODO LIST</title>
     </head>
     <body>        
-		<img src="assets/images/icon.png" width="32" height="32"/>
         <h3>
            {{ app_title }}
         </h3>
@@ -199,10 +247,9 @@ app.get('/add', (req, res) => {
 			<% } %>
 			
 			<% todos.forEach(todo => {   %>
-				<ol type="a"> <%= todo %> </ol>
+				<ol type="a"> <%= todo.id %> - <%= todo.content %></ol>
 			<% }); %>
         </div>
-
     </body>
 </html>
 ```

@@ -12,6 +12,8 @@ module.exports = class afTemplate {
      */
 	constructor( alias_cfg ) {
         this.alias = {};
+		this.fn = null;
+        // this.templates_map = {};
         if ( alias_cfg ) {
             this.setAlias( alias );
         }
@@ -33,7 +35,7 @@ module.exports = class afTemplate {
 					// no need to repeat it anymore 
 					is_included[ html_path ] = true;					
 				}
-				await this.render(response, html_path, argument);				
+				await this.render(response, html_path, argument, true);				
 			}		
 		} catch(e) {
 			throw e;
@@ -46,9 +48,13 @@ module.exports = class afTemplate {
      */
     async renderPages(response, array) {
         try {
+			if ( this.fn )
+				this.fn(); 
             for(let i = 0; i < array.length; i++) {
                 const page = array[i];
-                await this.render(response, page.path, page.argument);
+				
+
+                await this.render(response, page.path, page.argument, true);
             }
             return array;
         } catch (e) {
@@ -62,8 +68,14 @@ module.exports = class afTemplate {
      * @param {*} response the server's response ( from express )
      * @param {string} html_path Path of the template file to load
      * @param {JSON} argument Args of the template
+	 * @param {boolean} block_fn allows or not uses of this.fn() if defined
      */
-    async render(response, html_path, argument) {
+    async render(response, html_path, argument, block_fn ) {
+		if ( block_fn == undefined || block_fn === false ) {
+			if ( this.fn )
+				this.fn();
+		}
+		
         let content = fs.readFileSync( html_path ).toString();
         if( argument ) {
             // replaces all single variables defined in 'argument' : eg {{ a_single_variable }}
@@ -227,11 +239,14 @@ module.exports = class afTemplate {
         if (typeof alias != 'string' || typeof path != 'string' ) {
             throw new Error('Invalid path/alias, alias/path must be a string');
         }
+        if ( alias.match(/^([A-Za-z0-9_-]+)$/gi) == null) {
+            throw new Error("Invalid alias, alias should not contain symbols except '_' and '-' ");
+        }
         this.alias[ alias ] = path;
     }
 
     /**
-     * Stores all stuffs contained inside alias_cfg to the current instance
+     * Stores everything from alias_cfg to the current instance
      * @param {JSON} alias_cfg
      */
     setAlias(alias_cfg) {
@@ -253,16 +268,27 @@ module.exports = class afTemplate {
     }
 
     /**
-     * Setup the template referenced by alias_name
-     * .Can be helpful with 'renderPages'
-     * @param {*} alias_name 
-     * @param {*} args Argument of the template referenced by 'alias_name'
+     * Setup the template referenced by alias_name.
+     * Can be helpful with 'renderPages'
+     * @param {string} alias_name 
+     * @param {JSON} args argument of the template referenced by 'alias_name'
      */
     setup( alias_name, args) {
-        let config = { path : this.path( alias_name ) };
+        let config = {};
+		config.path = this.path( alias_name )
         if ( args )
             config.argument = args;
-        console.log( config );
         return config;
     }
+	
+    /**
+     * Defines a function which will be called before each page rendering 
+     * @param {string} alias_name 
+     * @param {JSON} args argument of the template referenced by 'alias_name'
+     */		
+	use( fn ) {
+		if ( typeof fn != 'function' )
+			throw new Error("fn must be a function!");
+		this.fn = fn;
+	}
 }

@@ -6,6 +6,11 @@ const port = 4200;
 
 const afTemplate = require("../../index");
 const engine = new afTemplate();
+
+engine.use(function() {
+	console.log('SOME RENDERING...');
+});
+
 engine.setAlias({
     'head' : "./views/partials/head.html",
     'body' : "./views/partials/body.html",

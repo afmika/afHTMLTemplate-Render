@@ -18,12 +18,16 @@ app.use(function(req, res, next) {
 });
 
 
+engine.setAlias({
+	'home' : './views/index.html'
+});
+
 app.get('/', (req, res) => {
     res.writeHead(200, { 
         'Content-Type': 'text/html' 
     });
 	
-    engine.render(res, "./views/index.html", {
+    engine.render(res, engine.path('home'), {
         app_title : "Test todo list",
 		todos : todos_array,
     })

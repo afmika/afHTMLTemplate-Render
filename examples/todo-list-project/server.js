@@ -1,11 +1,11 @@
 'use strict';
 
 const express = require('express');
-const afTemplate = require("aftemplate");
-
 const app = express();
-const engine = new afTemplate();
 const port = 4200;
+
+const afTemplate = require("aftemplate");
+const engine = new afTemplate();
 
 let todos_array = [];
 
@@ -17,16 +17,19 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use('/assets', express.static('assets'));
+
+engine.setAlias({
+	'home' : './views/index.html'
+});
 
 app.get('/', (req, res) => {
     res.writeHead(200, { 
         'Content-Type': 'text/html' 
     });
 	
-    engine.render(res, "./views/index.html", {
-        app_title : "Todo list project",
-		todos : todos_array
+    engine.render(res, engine.path('home'), {
+        app_title : "Test todo list",
+		todos : todos_array,
     })
 	.then(page => {
         console.log(page.path, "RENDERED");
@@ -39,6 +42,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/add', (req, res) => {
-	todos_array.push( req.query.todo );
+	todos_array.push({ 
+		id : todos_array.length + 1 , 
+		content : req.query.todo
+	});
 	res.redirect('/');
 });

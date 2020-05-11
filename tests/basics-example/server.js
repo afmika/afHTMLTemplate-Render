@@ -6,6 +6,10 @@ const port = 4200;
 
 const afTemplate = require("../../index");
 const engine = new afTemplate();
+engine.use(function() {
+	console.log('SOME RENDERING...');
+});
+
 
 app.listen(process.env.PORT || port, () => console.log(`SERVER IS RUNNING AT ${port}`));
 

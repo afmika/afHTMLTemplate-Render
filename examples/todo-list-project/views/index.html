@@ -1,10 +1,9 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
  <html>
     <head>
         <title>TODO LIST</title>
     </head>
     <body>        
-		<img src="assets/images/icon.png" width="32" height="32"/>
         <h3>
            {{ app_title }}
         </h3>
@@ -18,10 +17,10 @@
 			<% if( todos.length == 0) { %>
 				<h3> No todos yet...</h3>
 			<% } %>
+			
 			<% todos.forEach(todo => {   %>
-				<ol type="a"> <%= todo %> </ol>
+				<ol type="a"> <%= todo.id %> - <%= todo.content %></ol>
 			<% }); %>
         </div>
-
     </body>
 </html>
