@@ -1,24 +1,27 @@
 /**
  * @author afmika
  */
- 
+
 "use strict";
 
 const fs = require("fs");
 
 module.exports = class afTemplate {
     /**
-     * @param {JSON[]} alias_cfg 
+     * @param {JSON[]} alias_cfg
      */
 	constructor( alias_cfg ) {
         this.alias = {};
 		this.fn = null;
+        this.core = {
+            writeFunctionName : 'write'
+        };
         // this.templates_map = {};
         if ( alias_cfg ) {
             this.setAlias( alias );
         }
     }
-    
+
     /**
      * Includes a view inside another one
      * @param {*} response the server's response ( from express )
@@ -32,11 +35,11 @@ module.exports = class afTemplate {
 			let can_not_include = no_repeat && is_included[ html_path ];
 			if( ! can_not_include ) {
 				if( no_repeat ) {
-					// no need to repeat it anymore 
-					is_included[ html_path ] = true;					
+					// no need to repeat it anymore
+					is_included[ html_path ] = true;
 				}
-				await this.render(response, html_path, argument, true);				
-			}		
+				await this.render(response, html_path, argument, true);
+			}
 		} catch(e) {
 			throw e;
 		}
@@ -49,10 +52,10 @@ module.exports = class afTemplate {
     async renderPages(response, array) {
         try {
 			if ( this.fn )
-				this.fn(); 
+				this.fn();
             for(let i = 0; i < array.length; i++) {
                 const page = array[i];
-				
+
 
                 await this.render(response, page.path, page.argument, true);
             }
@@ -71,11 +74,12 @@ module.exports = class afTemplate {
 	 * @param {boolean} block_fn allows or not uses of this.fn() if defined
      */
     async render(response, html_path, argument, block_fn ) {
+        const writeFuncName = this.core.writeFunctionName || 'write';
 		if ( block_fn == undefined || block_fn === false ) {
 			if ( this.fn )
 				this.fn();
 		}
-		
+
         let content = fs.readFileSync( html_path ).toString();
         if( argument ) {
             // replaces all single variables defined in 'argument' : eg {{ a_single_variable }}
@@ -86,12 +90,12 @@ module.exports = class afTemplate {
                 content = content.replace(exp, value);
             }
         }
-		
+
 		// we need to deal with some weird stuff like putting "`" inside the content (eg: <b>L`arbre</b>)
 		// if we don't escape it, a parsing error will be triggered
 		content = content.replace(/`/gi, "\\`");
-		
-        // replaces all expressions 
+
+        // replaces all expressions
         let code_part = []; // contains the position of each couple <%, %>
         let text_part = []; // contains the position of each text
 		let code_write_part = {};
@@ -113,7 +117,7 @@ module.exports = class afTemplate {
 								code_write_part[ code_part.length ] = true;
 							}
                     } else if(content[i] == "%" && content[i+1] == ">") {
-                        text.push( i + 2 ); // +2 : we start after %> (since i represents %  's index) 
+                        text.push( i + 2 ); // +2 : we start after %> (since i represents %  's index)
 
                         code.push(i + 2);
                         code_part.push( code );
@@ -125,7 +129,7 @@ module.exports = class afTemplate {
                 text_part.push( text );
             }
         }
-        
+
         // console.log(code_part);
         // console.log(text_part);
         // console.log(code_write_part);
@@ -145,21 +149,21 @@ module.exports = class afTemplate {
                 if( code[1] == text_start && ! printed) {
                     index_used[ index ] = true;
                     let code_before = code;
-					
+
 					if(code_write_part[ index ]) {
 						const ctn = content.substring(code_before[0] + 3, code_before[1] - 2);
 						const temp = ctn.replace("`", "\\`");
 						// console.log(temp);
-						content_to_eval += "response.write(''+(" + temp + ")\);";
+						content_to_eval += "response[ writeFuncName ](''+(" + temp + ")\);";
 					} else {
 						content_to_eval += content.substring(code_before[0] + 2, code_before[1] - 2);
 					}
                     return;
                 }
             });
-			
+
 			const temp = content.substring(text_start, text_end+1);
-            content_to_eval += "response.write(`" + temp + "`);";  
+            content_to_eval += "response[ writeFuncName ](`" + temp + "`);";
 
             code_part.forEach((code, index) => {
                 let printed = false;
@@ -172,7 +176,7 @@ module.exports = class afTemplate {
 						if(code_write_part[ index ]) {
 							let ctn = content.substring(code_after[0] + 3, code_after[1] - 2);
 							const temp = ctn.replace("`", "\\`");
-							content_to_eval += "response.write(''+(" + temp + "));";
+							content_to_eval += "response[ writeFuncName ](''+(" + temp + "));";
 						} else {
 							content_to_eval += content.substring(code_after[0] + 2, code_after[1] - 2);
 						}
@@ -180,7 +184,7 @@ module.exports = class afTemplate {
                 };
             });
         }
-        
+
         if(code_part.length > 0) {
             // response.write(content_to_eval);
 
@@ -188,11 +192,11 @@ module.exports = class afTemplate {
 			// will run inside this function
 			const that = this;
 			const run_protected_context = function(response, argument) {
-				
+
 				// arg alias
 				// eg: $.some_variable == argument.some_variable : true
 				let [$, page, props] = new Array(3).fill( argument );
-				
+
 				// includes
 				let is_included = {};
 				const include = function(html_path) {
@@ -201,7 +205,7 @@ module.exports = class afTemplate {
 				const include_once = function(html_path) {
 					that.includePartial(response, html_path, argument, is_included, true);
 				}
-				
+
 				// direct uses of a variable
 				let arr = [], values = [];
 				for(let variable in argument) {
@@ -211,19 +215,19 @@ module.exports = class afTemplate {
 				let str = `let [${ arr.join(',') }] = [${ values.join(',') }];`;
 				// console.log(str);
 				content_to_eval = str + content_to_eval;
-				eval(content_to_eval);				
+				eval(content_to_eval);
 			}
-			
+
 			run_protected_context(response, argument);
-			
+
             return {
                 content: content_to_eval,
                 path : html_path
             };
         }
-		
-        response.write( content );
-		
+
+        // response.write( content );
+        response[ writeFuncName ] ( content );
         return {
             content: content,
             path : html_path
@@ -232,8 +236,8 @@ module.exports = class afTemplate {
 
     /**
      * Stores 'alias' to the current instance
-     * @param {string} alias 
-     * @param {string} path 
+     * @param {string} alias
+     * @param {string} path
      */
     addAlias(alias, path) {
         if (typeof alias != 'string' || typeof path != 'string' ) {
@@ -257,7 +261,7 @@ module.exports = class afTemplate {
 
     /**
      * Returns the path associated with 'alias_name'
-     * @param {string} alias_name 
+     * @param {string} alias_name
      * @returns {string} path of the given alias
      */
     path( alias_name ) {
@@ -270,7 +274,7 @@ module.exports = class afTemplate {
     /**
      * Setups the template referenced by alias_name.
      * Can be helpful with 'renderPages'
-     * @param {string} alias_name 
+     * @param {string} alias_name
      * @param {JSON} args argument of the template referenced by 'alias_name'
      */
     setup( alias_name, args) {
@@ -280,12 +284,12 @@ module.exports = class afTemplate {
             config.argument = args;
         return config;
     }
-	
+
     /**
-     * Defines a function which will be called before each page rendering 
-     * @param {string} alias_name 
+     * Defines a function which will be called before each page rendering
+     * @param {string} alias_name
      * @param {JSON} args argument of the template referenced by 'alias_name'
-     */		
+     */
 	use( fn ) {
 		if ( typeof fn != 'function' )
 			throw new Error("fn must be a function!");
