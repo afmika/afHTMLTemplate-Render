@@ -7,7 +7,7 @@ A simple tool to dynamically display HTML template pages using nodejs, Javascrip
 * Lightweight
 * Uses 100% javascript as template programming language
 * Easy to configure with your preferred view architecture
-* Can render any type of template text file and not just html (json, xml, ...)
+* Can render any type of template text file and not just html (json, xml, ...) by setting the correct header
 * Template alias system
 * Write less, do more
 
@@ -17,28 +17,22 @@ A simple tool to dynamically display HTML template pages using nodejs, Javascrip
 
 'use strict';
 const express = require('express');
-const afTemplate = require("aftemplate");
+const aftemplate = require("aftemplate");
 
 const app = express();
-const engine = new afTemplate();
+app.use(aftemplate.adaptor());
 
-app.get('/', (req, res) => {
-	res.writeHead(200, { 
-		'Content-Type': 'text/html' 
-	});
-	
-	engine.render(res, "./path/to/mypage.html", {
-		app_title : "Example 1",
-		names : ['Marc', 'John', 'Diana']
-	})
-	.then(page => {
-		console.log(page.path, "RENDERED");
-		res.end('');
-	})
-	.catch(err => {
-		console.log( err );
-		res.end( err.toString() );
-	});
+app.get('/', async (req, res) => {
+	try {
+		// the default Content-Type header is set to text/html
+		await res.render("./path/to/mypage.html", {
+			app_title : "Example 1",
+			names : ['Marc', 'John', 'Diana']
+		});
+	} catch(err) {
+		console.error(err);
+		res.end('Something went wrong');
+	}
 });
 ```
 mypage.html
@@ -61,42 +55,34 @@ mypage.html
 ```javascript
 'use strict';
 const express = require('express');
-const afTemplate = require("aftemplate");
+const aftemplate = require('aftemplate');
 
 const app = express();
-const engine = new afTemplate();
-engine.setAlias({
+app.use(aftemplate.adaptor({
+	// aliases
     'header' : './path/to/head.html',
     'body' : './path/to/body.html',
-    'footer' './path/to/foot.html'
-});
+    'footer': './path/to/foot.html'
+}));
 
-app.get('/', (req, res) => {
-	res.writeHead(200, { 
-		'Content-Type': 'text/html' 
-	});
-	const partials = [
-		engine.setup('header', { message : "Hello from head.html" }),
-        
-		engine.setup('body', { 
-			message1 : "Hello from body.html", 
-			message2 : "It works!",
-			time_info : new Date().toJSON()
-		}),
-		
-		engine.setup('footer', { message : "Hello from foot.html" })
-	];
-	
-	engine.renderPages(res, partials)
-	.then(pages => {
-		for(let p in pages)
-			console.log(pages[p].path, " RENDERED");
-		res.end("");
-	})
-	.catch(err => {
+app.get('/', async (req, res) => {
+	try {
+		const eg = res.rendererEngine;
+		const partials = [
+			eg.setup('header', { message : "Hello from head.html" }),
+			eg.setup('body', { 
+				message1 : "Hello from body.html", 
+				message2 : "It works!",
+				time_info : new Date().toJSON()
+			}),
+			eg.setup('footer', { message : "Hello from foot.html" })
+		];
+		// the default Content-Type header is set to text/html
+		await res.renderPages(partials);
+	} catch(err) {
 		console.log( err );
-		res.end( err.toString() );
-	});
+		res.end('Something went wrong');
+	}
 });
 ```
 Or ...
@@ -104,44 +90,37 @@ Or ...
 ```javascript
 'use strict';
 const express = require('express');
-const afTemplate = require("aftemplate");
+const aftemplate = require('aftemplate');
 
 const app = express();
-const engine = new afTemplate();
+app.use(aftemplate.adaptor());
 
-app.get('/', (req, res) => {
-	res.writeHead(200, { 
-		'Content-Type': 'text/html' 
-	});
-	const partials = [
-		{
-			path: "./path/to/head.html",
-			argument: { message : "Hello from head.html" }
-		},
-		{
-			path: "./path/to/body.html",
-			argument: { 
-				message1 : "Hello from body.html", 
-				message2 : "It works!",
-				time_info : new Date().toJSON()
+app.get('/', async (req, res) => {
+	try {
+		const partials = [
+			{
+				path: './path/to/head.html',
+				argument: { message : 'Hello from head.html' }
+			},
+			{
+				path: './path/to/body.html',
+				argument: { 
+					message1 : 'Hello from body.html', 
+					message2 : 'It works!',
+					time_info : new Date().toJSON()
+				}
+			},
+			{
+				path: './path/to/foot.html',
+				argument: { message : 'Hello from foot.html' }
 			}
-		},
-		{
-			path: "./path/to/foot.html",
-			argument: { message : "Hello from foot.html" }
-		}
-	];
-	
-	engine.renderPages(res, partials)
-	.then(pages => {
-		for(let p in pages)
-			console.log(pages[p].path, " RENDERED");
-		res.end("");
-	})
-	.catch(err => {
+		];
+		
+		await res.renderPages(partials);
+	} catch (err) {
 		console.log( err );
-		res.end( err.toString() );
-	});
+		res.end('Something went wrong');
+	}
 });
 ```
 ### Templates used
@@ -193,8 +172,7 @@ const express = require('express');
 const app = express();
 const port = 4200;
 
-const afTemplate = require("aftemplate");
-const engine = new afTemplate();
+const afTemplate = require("afTemplate");
 
 let todos_array = [];
 
@@ -206,28 +184,22 @@ app.use(function(req, res, next) {
     next();
 });
 
-
-engine.setAlias({
+app.use(afTemplate.adaptor({
 	'home' : './views/index.html'
-});
+}));
 
-app.get('/', (req, res) => {
-    res.writeHead(200, { 
-        'Content-Type': 'text/html' 
-    });
-	
-    engine.render(res, engine.path('home'), {
-        app_title : "Test todo list",
-		todos : todos_array,
-    })
-	.then(page => {
-        console.log(page.path, "RENDERED");
-        res.end('');
-    })
-	.catch(err => {
-        console.log( err );
-        res.end( err.toString() );
-    });
+
+app.get('/', async (req, res) => {
+    const eg = res.rendererEngine;
+    try {
+        await res.render(eg.path('home'), {
+            app_title : "Test todo list",
+            todos : todos_array,
+        });
+    } catch(e) {
+        console.error(e);
+        res.end('Something went wrong');
+    }
 });
 
 app.get('/add', (req, res) => {

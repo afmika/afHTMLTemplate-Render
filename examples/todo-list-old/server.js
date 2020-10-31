@@ -5,6 +5,7 @@ const app = express();
 const port = 4200;
 
 const aftemplate = require("aftemplate");
+const engine = new aftemplate();
 
 let todos_array = [];
 
@@ -16,22 +17,28 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use(aftemplate.adaptor({
+
+engine.setAlias({
 	'home' : './views/index.html'
-}));
+});
 
-
-app.get('/', async (req, res) => {
-    const eg = res.rendererEngine;
-    try {
-        await res.render(eg.path('home'), {
-            app_title : "Test todo list",
-            todos : todos_array,
-        });
-    } catch(e) {
-        console.error(e);
-        res.end('Something wrong happened :(');
-    }
+app.get('/', (req, res) => {
+    res.writeHead(200, { 
+        'Content-Type': 'text/html' 
+    });
+	
+    engine.render(res, engine.path('home'), {
+        app_title : "Test todo list",
+		todos : todos_array,
+    })
+	.then(page => {
+        console.log(page.path, "RENDERED");
+        res.end('');
+    })
+	.catch(err => {
+        console.log( err );
+        res.end( err.toString() );
+    });
 });
 
 app.get('/add', (req, res) => {

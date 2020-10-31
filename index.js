@@ -7,17 +7,48 @@
 const fs = require("fs");
 
 module.exports = class afTemplate {
+
     /**
-     * @param {JSON[]} alias_cfg
+     * Using afTemplate as an Express middleware
+     * @param {JSON} alias
+     * @returns {Function} express middleware callback function
      */
-	constructor( alias_cfg ) {
+    static adaptor( alias ) {
+        const instance = new afTemplate( alias );
+        return (req, res, next) => {
+            res.rendererEngine = instance;
+
+            res.render = async (path, params, headers) => {
+                res.writeHead(200, headers || { 
+                    'Content-Type': 'text/html' 
+                });
+                await res.rendererEngine.render(res, path, params);
+                res.end();
+            };
+
+            res.renderPages = async (pages_array, headers) => {
+                res.writeHead(200, headers || { 
+                    'Content-Type': 'text/html' 
+                });
+                await res.rendererEngine.renderPages(res, pages_array);
+                res.end();              
+            }
+
+            next();
+        }
+    }
+
+    /**
+     * @param {JSON} alias
+     */
+	constructor( alias ) {
         this.alias = {};
 		this.fn = null;
         this.core = {
             writeFunctionName : 'write'
         };
         // this.templates_map = {};
-        if ( alias_cfg ) {
+        if ( alias ) {
             this.setAlias( alias );
         }
     }
@@ -43,7 +74,8 @@ module.exports = class afTemplate {
 		} catch(e) {
 			throw e;
 		}
-	}
+    }
+    
 	/**
      * Renders multiple template files
      * @param {*} response the server's response ( from express )
