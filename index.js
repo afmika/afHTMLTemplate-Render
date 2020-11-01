@@ -19,17 +19,21 @@ module.exports = class afTemplate {
             res.rendererEngine = instance;
 
             res.render = async (path, params, headers) => {
-                res.writeHead(200, headers || { 
-                    'Content-Type': 'text/html' 
-                });
+                if ( !res.headersSent ) { 
+					res.writeHead(200, headers || { 
+						'Content-Type': 'text/html' 
+					});
+				}
                 await res.rendererEngine.render(res, path, params);
                 res.end();
             };
 
             res.renderPages = async (pages_array, headers) => {
-                res.writeHead(200, headers || { 
-                    'Content-Type': 'text/html' 
-                });
+                if ( !res.headersSent ) { 
+					res.writeHead(200, headers || { 
+						'Content-Type': 'text/html' 
+					});
+				}
                 await res.rendererEngine.renderPages(res, pages_array);
                 res.end();              
             }
